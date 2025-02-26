@@ -110,7 +110,7 @@ BEGIN
 END;
 /
 
-/*
+
 SET SERVEROUTPUT ON
 declare
  resultado integer;
@@ -122,11 +122,29 @@ begin
      else
         dbms_output.put_line('Reserva 1: MAL');
      end if;
+
+     resultado := reservarPista( 'Socio 2', CURRENT_DATE, 12 );
+     if resultado=1 then
+        dbms_output.put_line('Reserva 1: OK');
+     else
+        dbms_output.put_line('Reserva 1: MAL');
+     end if;
      
-     --Continua tu solo....
+     resultado := reservarPista( 'Socio 3', CURRENT_DATE, 12 );
+     if resultado=1 then
+        dbms_output.put_line('Reserva 1: OK');
+     else
+        dbms_output.put_line('Reserva 1: MAL');
+     end if;
      
-      
-    resultado := anularreserva( 'Socio 1', CURRENT_DATE, 12, 1);
+     resultado := reservarPista( 'Socio 4', CURRENT_DATE, 12 );
+     if resultado=1 then
+        dbms_output.put_line('Reserva 1: OK');
+     else
+        dbms_output.put_line('Reserva 1: MAL');
+     end if;      
+
+     resultado := anularreserva( 'Socio 1', CURRENT_DATE, 12, 1);
      if resultado=1 then
         dbms_output.put_line('Reserva 1 anulada: OK');
      else
@@ -134,8 +152,14 @@ begin
      end if;
   
      resultado := anularreserva( 'Socio 1', date '1920-1-1', 12, 1);
-     --Continua tu solo....
-  
+     if resultado=1 then
+        dbms_output.put_line('Reserva 1 anulada: OK');
+     else
+        dbms_output.put_line('Reserva 1 anulada: MAL');
+     end if;
+     commit;
+     select * from reservas;
+     commit;
 end;
 /
 */
