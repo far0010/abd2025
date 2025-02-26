@@ -111,6 +111,8 @@ END;
 /
 
 
+/* bloque anónimo
+
 SET SERVEROUTPUT ON
 declare
  resultado integer;
@@ -158,9 +160,9 @@ begin
         dbms_output.put_line('Reserva 1 anulada: MAL');
      end if;
      commit;
-     select * from reservas;
-     commit;
 end;
 /
+select * from reservas;
+commit;
 */
 
