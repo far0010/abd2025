@@ -1,4 +1,16 @@
 /* 2025_v1 */
+/*Francisco J. Arroyo Redondo https://github.com/far0010/abd2025 
+  1º 
+   1.-	la función TRUNC, nos permite eliminar, las horas, minutos y segudos así podemos comparar fechas:
+   	así TRUNC(CAMPO) = TO_DATE('18042025', 'DDMMYYYY') compara si el campo es esa fecha
+   2.-	sql%rowcount, nos indica las filas que se han añadido, por ejemplo al hacer un update, podemos preguntar si la variable vale 1 hacer commit
+   3.-	Una variable tipo cursor es la que sirve para almacenar un dato de una consulta, puede ser implícito, para una fila explícito que almacenan
+	más de una fila
+   4.-	vPistasLibres es un cursor explícito, OPEN abre el cursor, FETCH lo recorre y CLOSE lo cierra.
+	FOUND es true si hay elementos en el curos y false al contrario. NOTFOUND justo al reves, si no hay elementos en el cursor es true.
+   5.-	En anular reservas se hace un borrado de fila si coincide con una fecha, hora y socio, en ese caso sql%rowcount=1, en caso contrario no ha 
+	ejecutado nada con lo cual da lo mismo rollback que commit
+*/
 
 drop table reservas;
 drop table pistas;
