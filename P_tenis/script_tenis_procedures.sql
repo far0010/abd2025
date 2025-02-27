@@ -50,12 +50,9 @@ create or replace procedure pReservarPista(
 	argSocio reservas.socio%type,
         argFecha reservas.fecha%type,
         argHora  reservas.hora%type) is
-/*
-  exReservaInexistente exception;
-  pragma exception_init (exReservaInexistente, -20000),
-*/
+
   exSinPistaLibre exception;
-  pragma exception_init (exSinPistaLibre, -20001),
+  pragma exception_init (exSinPistaLibre, -20001);
 
   CURSOR vPistasLibres IS
         SELECT nro
@@ -96,7 +93,7 @@ create or replace procedure pAnularReserva(
 	argPista reservas.pista%type) is
 
   exReservaInexistente exception;
-  pragma exception_init (exReservaInexistente, -20000),
+  pragma exception_init (exReservaInexistente, -20000);
 
 begin
 	DELETE FROM reservas 
@@ -132,3 +129,5 @@ BEGIN
     commit;
 END;
 /
+
+EXEC TEST_PROCEDURES_TENIS;
