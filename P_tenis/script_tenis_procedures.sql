@@ -1,7 +1,10 @@
 /*
 https://github.com/far0010/abd2025/tree/main/P_tenis
 
-inicialmente cambiamos el aislamiento por defecto a SERIALIZABLE
+Paso 6: Podría darse el caso de que 2 sesiones intentasen realizar la reserva, ya que el 
+cursor no permite el select for UPDATE, así que cambiamos el aislamiento por defecto a 
+SERIALIZABLE, con lo que la primera transacción que consulte se quedará con el bloqueo 
+hasta finalizar con commit o rollback
 
 */
 
@@ -40,3 +43,92 @@ insert into reservas
 	values (seq_pistas.currval, '22/03/2018', 12, 'Pepito');
 
 commit;
+
+/* PROCEDIMIENTO RESERVAR PISTAS */
+
+create or replace procedure pReservarPista(
+	argSocio reservas.socio%type,
+        argFecha reservas.fecha%type,
+        argHora  reservas.hora%type) is
+/*
+  exReservaInexistente exception;
+  pragma exception_init (exReservaInexistente, -20000),
+*/
+  exSinPistaLibre exception;
+  pragma exception_init (exSinPistaLibre, -20001),
+
+  CURSOR vPistasLibres IS
+        SELECT nro
+        FROM pistas 
+        WHERE nro NOT IN (
+            SELECT pista
+            FROM reservas
+            WHERE 
+                trunc(fecha) = trunc(argFecha) AND
+                hora = argHora)
+        order by nro;
+            
+  vPista INTEGER;
+
+begin
+
+   OPEN vPistasLibres;
+   FETCH vPistasLibres INTO vPista;
+
+   IF vPistasLibres%NOTFOUND
+   THEN
+        CLOSE vPistasLibres;
+        raise_application_error(-20001, 'No quedan pistas libres en esa fecha y hora');
+    ELSE
+	INSERT INTO reservas VALUES (vPista, argFecha, argHora, argSocio);
+    END IF;
+    CLOSE vPistasLibres;
+    COMMIT;
+END;
+/
+
+/* PROCEDIMIENTO ANULAR RESERVAS */
+
+create or replace procedure pAnularReserva(
+	argSocio reservas.socio%type,
+        argFecha reservas.fecha%type,
+        argHora  reservas.hora%type,
+	argPista reservas.pista%type) is
+
+  exReservaInexistente exception;
+  pragma exception_init (exReservaInexistente, -20000),
+
+begin
+	DELETE FROM reservas 
+        WHERE
+            trunc(fecha) = trunc(ArgFecha) AND
+            pista = ArgPista AND
+            hora = ArgHora AND
+            socio = ArgSocio;
+
+	if sql%rowcount = 1 then
+		commit;
+	else
+		rollback;
+		raise_application_error(-20000, 'Reserva inexistente');
+	end if;
+end;
+/
+
+SET SERVEROUTPUT ON
+
+
+create or replace PROCEDURE TEST_PROCEDURES_TENIS AS 
+ 
+
+BEGIN 
+    pReservarPista( 'Socio 1', CURRENT_DATE, 12 );
+    pReservarPista( 'Socio 2', CURRENT_DATE, 12 );
+    preservarPista( 'Socio 4', CURRENT_DATE, 12 );
+    preservarPista( 'Socio 3', CURRENT_DATE, 12 );
+    pAnularreserva( 'Socio 1', CURRENT_DATE, 12, 1);
+    pAnularreserva( 'Socio 1', date '1920-1-1', 12, 1);
+    
+    commit;
+END;
+/
